@@ -14,20 +14,31 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String
-  email     String   @unique
-  password  String
-  events    Event[]
+  id            Int          @id @default(autoincrement())
+  username      String
+  email         String       @unique
+  password      String
+  organizedEvents Event[]    @relation("OrganizerEvents") // Events as a host
+  registrations UserEvent[]  // Registered events
 }
 
 model Event {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  date        DateTime
-  time        String
-  location    String
-  organizer   User     @relation(fields: [organizerId], references: [id])
-  organizerId Int
+  id            Int          @id @default(autoincrement())
+  title         String
+  description   String
+  date          DateTime
+  time          String
+  location      String
+  organizer     User         @relation("OrganizerEvents", fields: [organizerId], references: [id])
+  organizerId   Int
+  participants  UserEvent[]  // Users who signed up for this event
+}
+
+model UserEvent {
+  id      Int    @id @default(autoincrement())
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+  event   Event  @relation(fields: [eventId], references: [id])
+  eventId Int
+  @@unique([userId, eventId])  // Ensure that each user can only register for the same event once
 }

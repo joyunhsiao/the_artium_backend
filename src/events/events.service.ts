@@ -11,7 +11,7 @@ export class EventsService {
       where: {
         title: {
           contains: search || '',
-          mode: 'insensitive',  // 忽略大小寫
+          mode: 'insensitive',  // case insensitive
         },
       },
     });
@@ -51,5 +51,35 @@ export class EventsService {
       where: { id: parseInt(id, 10) },
     });
     return { message: '活動刪除成功' };
+  }
+
+  // Registration event
+  async registerEvent(userId: number, eventId: number) {
+    try {
+      const registration = await this.prisma.userEvent.create({
+        data: {
+          userId: userId,
+          eventId: eventId,
+        },
+      });
+      return registration;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // Cancel registration event
+  async unregisterEvent(userId: number, eventId: number) {
+    try {
+      const unregistration = await this.prisma.userEvent.deleteMany({
+        where: {
+          userId: userId,
+          eventId: eventId,
+        },
+      });
+      return unregistration;
+    } catch (error) {
+      return null;
+    }
   }
 }
